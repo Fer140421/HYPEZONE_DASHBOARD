@@ -1,0 +1,7 @@
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2552: Cannot find name 'ProductViewDialogComponent'. Did you mean 'ProductPriceDialogComponent'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/productos/productos.component.ts:466:21:
+[37m      466 │     this.dialog.open([32mProductViewDialogComponent[37m, {
+          ╵                      [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m

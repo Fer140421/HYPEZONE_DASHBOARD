@@ -1,0 +1,80 @@
+import { AuditableEntity } from './base.model';
+
+export type CategoriaProducto =
+  | 'zapatillas'
+  | 'polera'
+  | 'chompa'
+  | 'canguro'
+  | 'pantalon'
+  | 'camisa'
+  | 'short'
+  | 'accesorio'
+  | 'otro';
+
+export type GeneroProducto = 'hombre' | 'mujer' | 'unisex' | 'nino' | 'nina';
+export type EstadoProducto = 'disponible' | 'reservado' | 'vendido' | 'agotado';
+
+export interface Producto extends AuditableEntity {
+  schemaVersion?: number;
+  loteId?: string;
+  nombre: string;
+  marca?: string;
+  categoria?: CategoriaProducto | string;
+  descripcion: string;
+  talla: string;
+  color?: string;
+  genero?: GeneroProducto;
+  precioCompra: number;
+  precioVenta: number;
+  precioOferta?: number;
+  estado: EstadoProducto;
+  imagenes: string[];
+  codigo?: string;
+  notas?: string;
+}
+
+export function normalizeProducto(producto: Producto): Producto {
+  return {
+    ...producto,
+    imagenes: Array.isArray(producto.imagenes) ? producto.imagenes : [],
+    precioVenta: Number(producto.precioVenta ?? 0),
+    precioCompra: Number(producto.precioCompra ?? 0),
+    activo: producto.activo ?? true,
+    estado: producto.estado ?? 'disponible',
+  };
+}
+
+export function precioProducto(producto: Producto): number {
+  return Number(producto.precioVenta ?? 0);
+}
+
+export function precioCompraProducto(producto: Producto): number {
+  return Number(producto.precioCompra ?? 0);
+}
+
+export function imagenesProducto(producto: Producto): string[] {
+  return Array.isArray(producto.imagenes) ? producto.imagenes : [];
+}
+
+export function normalizeImagenes(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string');
+  }
+
+  return typeof value === 'string' && value ? [value] : [];
+}
+
+export const categoriasProducto: CategoriaProducto[] = [
+  'zapatillas',
+  'polera',
+  'chompa',
+  'canguro',
+  'pantalon',
+  'camisa',
+  'short',
+  'accesorio',
+  'otro',
+];
+
+export const estadosProducto: EstadoProducto[] = ['disponible', 'reservado', 'vendido', 'agotado'];
+export const generosProducto: GeneroProducto[] = ['hombre', 'mujer', 'unisex', 'nino', 'nina'];
