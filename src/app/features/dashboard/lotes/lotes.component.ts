@@ -16,7 +16,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { combineLatest, map, shareReplay } from 'rxjs';
 import { Lote, emptyLote, loteFechaCompra } from '../../../core/models/lote.model';
 import { LoteResumen } from '../../../core/models/lote-resumen.model';
-import { Producto, categoriasProducto, estadosProducto, generosProducto, GeneroProducto, imagenesProducto, precioCompraProducto, precioProducto } from '../../../core/models/producto.model';
+import { Producto, estadosProducto, generosProducto, GeneroProducto, imagenesProducto, precioCompraProducto, precioProducto } from '../../../core/models/producto.model';
 import { Venta } from '../../../core/models/venta.model';
 import { LoteRepository } from '../../../core/repositories/lote.repository';
 import { ProductoRepository } from '../../../core/repositories/producto.repository';
