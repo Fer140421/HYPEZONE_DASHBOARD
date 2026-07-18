@@ -13,8 +13,10 @@ export interface Venta extends AuditableEntity {
   precioCompra: number;
   precioVenta: number;
   ganancia: number;
+  clienteId?: string;
   clienteNombre?: string;
   clienteTelefono?: string;
+  clienteCi?: string;
   metodoPago?: MetodoPago;
   fechaVenta: string;
   notas?: string;

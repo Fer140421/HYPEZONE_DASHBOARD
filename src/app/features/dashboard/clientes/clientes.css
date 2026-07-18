@@ -1,0 +1,22 @@
+.filters,
+.form-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.table-scroll {
+  overflow: auto;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.dialog-form {
+  padding-top: 8px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}

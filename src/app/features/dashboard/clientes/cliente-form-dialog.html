@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>{{ data ? 'Editar cliente' : 'Registrar cliente' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Nombre completo</mat-label>
+        <input matInput formControlName="nombreCompleto" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Celular</mat-label>
+        <input matInput formControlName="celular" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>CI (opcional)</mat-label>
+        <input matInput formControlName="ci" />
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close type="button">Cancelar</button>
+  <button mat-flat-button class="primary-action" type="button" (click)="save()" [disabled]="form.invalid || saving()">
+    {{ saving() ? 'Guardando...' : data ? 'Guardar cambios' : 'Registrar cliente' }}
+  </button>
+</mat-dialog-actions>

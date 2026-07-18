@@ -5,14 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-empty-state',
   standalone: true,
   imports: [MatIconModule],
-  template: `
-    <div class="empty-state">
-      <mat-icon>{{ icon() }}</mat-icon>
-      <h3>{{ title() }}</h3>
-      <p>{{ description() }}</p>
-      <ng-content />
-    </div>
-  `,
+  templateUrl: './empty-state.html',
+  styleUrl: './empty-state.css',
 })
 export class EmptyStateComponent {
   readonly icon = input('inventory_2');

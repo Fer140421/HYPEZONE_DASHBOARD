@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>Editar venta</h2>
+<mat-dialog-content>
+  <p class="edit-help">Puedes corregir los datos comerciales y el precio acordado. Los productos permaneceran vendidos.</p>
+  <form [formGroup]="form" class="edit-form">
+    <div formArrayName="precios" class="edit-products">
+      @for (control of precios.controls; track data.detalles[$index].id; let i = $index) {
+        <div [formGroupName]="i">
+          <span>
+            <strong>{{ data.detalles[i].nombreProducto }}</strong>
+            <small>Precio de compra: {{ data.detalles[i].precioCompra | currency: 'BOB' : 'symbol-narrow' }}</small>
+          </span>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Precio acordado</mat-label>
+            <span matTextPrefix>Bs&nbsp;</span>
+            <input matInput type="number" min="0" formControlName="precio" />
+          </mat-form-field>
+        </div>
+      }
+    </div>
+    <div class="edit-total"><span>Nuevo total</span><strong>{{ total | currency: 'BOB' : 'symbol-narrow' }}</strong></div>
+    <div class="fields">
+      <mat-form-field appearance="outline">
+        <mat-label>Metodo de pago</mat-label>
+        <mat-select formControlName="metodoPago">
+          @for (metodo of metodos; track metodo) {
+            <mat-option [value]="metodo">{{ metodo }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha</mat-label>
+        <input matInput [matDatepicker]="editPicker" formControlName="fechaVenta" />
+        <mat-datepicker-toggle matIconSuffix [for]="editPicker" />
+        <mat-datepicker #editPicker />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Cliente</mat-label>
+        <input matInput formControlName="clienteNombre" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Telefono</mat-label>
+        <input matInput formControlName="clienteTelefono" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>CI</mat-label>
+        <input matInput formControlName="clienteCi" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Notas</mat-label>
+        <textarea matInput rows="2" formControlName="notas"></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancelar</button>
+  <button mat-flat-button class="primary-action" [disabled]="form.invalid" (click)="save()">Guardar cambios</button>
+</mat-dialog-actions>

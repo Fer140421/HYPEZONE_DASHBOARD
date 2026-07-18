@@ -5,18 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-page-header',
   standalone: true,
   imports: [MatIconModule],
-  template: `
-    <section class="page-header">
-      <div>
-        <p class="eyebrow">{{ eyebrow() }}</p>
-        <h1>{{ title() }}</h1>
-        @if (description()) {
-          <p class="muted">{{ description() }}</p>
-        }
-      </div>
-      <ng-content />
-    </section>
-  `,
+  templateUrl: './page-header.html',
+  styleUrl: './page-header.css',
 })
 export class PageHeaderComponent {
   readonly eyebrow = input('Hypezone');

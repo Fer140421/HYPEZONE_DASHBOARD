@@ -19,52 +19,8 @@ import { AuthService } from '../../../core/services/auth.service';
     MatInputModule,
     MatIconModule,
   ],
-  template: `
-    <main class="login-page">
-      <div class="login-glow"></div>
-      <mat-card class="login-card">
-        <div class="login-brand">
-          <p>Hypezone</p>
-        </div>
-
-        <form [formGroup]="form" (ngSubmit)="submit()">
-          <mat-form-field appearance="outline">
-            <mat-label>Email</mat-label>
-            <mat-icon matPrefix>mail</mat-icon>
-            <input matInput type="email" formControlName="email" autocomplete="email" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Password</mat-label>
-            <mat-icon matPrefix>lock</mat-icon>
-            <input
-              matInput
-              [type]="showPassword() ? 'text' : 'password'"
-              formControlName="password"
-              autocomplete="current-password"
-            />
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              [attr.aria-label]="showPassword() ? 'Ocultar password' : 'Ver password'"
-              (click)="showPassword.set(!showPassword())"
-            >
-              <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-          </mat-form-field>
-
-          @if (error()) {
-            <p class="form-error">{{ error() }}</p>
-          }
-
-          <button mat-flat-button class="primary-action" type="submit" [disabled]="form.invalid || loading()">
-            {{ loading() ? 'Ingresando...' : 'Iniciar sesion' }}
-          </button>
-        </form>
-      </mat-card>
-    </main>
-  `,
+  templateUrl: './login.html',
+  styleUrl: './login.css',
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);

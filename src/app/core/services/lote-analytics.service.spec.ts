@@ -11,7 +11,7 @@ describe('LoteAnalyticsService', () => {
   });
   const producto = (overrides: Partial<Producto> = {}): Producto => ({
     id: 'p1', loteId: 'l1', nombre: 'Producto', descripcion: '', talla: 'M',
-    estado: 'disponible', precioCompra: 20, precioVenta: 40, activo: true, ...overrides,
+    estado: 'disponible', precioCompra: 20, precioVenta: 40, imagenes: [], activo: true, ...overrides,
   });
   const venta = (overrides: Partial<Venta> = {}): Venta => ({
     id: 'v1', productoId: 'p1', loteId: 'l1', nombreProducto: 'Producto', precioCompra: 20,

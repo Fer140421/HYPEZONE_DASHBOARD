@@ -5,7 +5,8 @@ import { MatChipsModule } from '@angular/material/chips';
   selector: 'app-status-chip',
   standalone: true,
   imports: [MatChipsModule],
-  template: `<mat-chip class="status-chip" [class]="tone()">{{ label() }}</mat-chip>`,
+  templateUrl: './status-chip.html',
+  styleUrl: './status-chip.css',
 })
 export class StatusChipComponent {
   readonly status = input.required<string>();

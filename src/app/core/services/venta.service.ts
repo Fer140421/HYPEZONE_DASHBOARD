@@ -16,7 +16,7 @@ import { removeUndefinedDeep } from '../repositories/firestore.repository';
 
 export type VentaInput = Pick<
   Venta,
-  'clienteNombre' | 'clienteTelefono' | 'fechaVenta' | 'notas'
+  'clienteId' | 'clienteNombre' | 'clienteTelefono' | 'clienteCi' | 'fechaVenta' | 'notas'
 > & {
   precioVenta: number;
   metodoPago: MetodoPago;
@@ -64,8 +64,10 @@ export class VentaService {
       transaction.set(operacionRef, removeUndefinedDeep({
         total: totalOperacion,
         cantidadDetalles: detalles.length,
+        clienteId: input.clienteId || undefined,
         clienteNombre: input.clienteNombre || undefined,
         clienteTelefono: input.clienteTelefono || undefined,
+        clienteCi: input.clienteCi || undefined,
         metodoPago: input.metodoPago,
         fechaVenta: input.fechaVenta,
         notas: input.notas || undefined,
@@ -83,13 +85,15 @@ export class VentaService {
           productoId: snapshots[index].id, loteId: current.loteId || undefined,
           nombreProducto: current.nombre, precioCompra, precioVenta,
           ganancia: precioVenta - precioCompra,
+          clienteId: input.clienteId || undefined,
           clienteNombre: input.clienteNombre || undefined,
           clienteTelefono: input.clienteTelefono || undefined,
+          clienteCi: input.clienteCi || undefined,
           metodoPago: input.metodoPago, fechaVenta: input.fechaVenta,
           notas: input.notas || undefined, activo: true, schemaVersion: 3,
           createdAt: timestamp, updatedAt: timestamp,
         }));
-        transaction.update(productoRefs[index], { estado: 'vendido', updatedAt: timestamp });
+        transaction.update(productoRefs[index], { estado: 'vendido', precioVenta, updatedAt: timestamp });
       });
     });
 
@@ -108,18 +112,26 @@ export class VentaService {
       const snapshots = await Promise.all(refs.map((ref) => transaction.get(ref)));
       if (snapshots.some((snapshot) => !snapshot.exists())) throw new Error('Uno de los detalles de venta ya no existe.');
       const timestamp = serverTimestamp();
-      snapshots.forEach((snapshot, index) => {
-        const current = snapshot.data() as Venta;
-        transaction.update(refs[index], removeUndefinedDeep({
-          precioVenta: precios[index], ganancia: precios[index] - Number(current.precioCompra ?? 0),
-          totalOperacion, metodoPago: input.metodoPago, fechaVenta: input.fechaVenta,
-          clienteNombre: input.clienteNombre || deleteField(), clienteTelefono: input.clienteTelefono || deleteField(),
-          notas: input.notas || deleteField(), updatedAt: timestamp,
-        }));
-      });
+        snapshots.forEach((snapshot, index) => {
+          const current = snapshot.data() as Venta;
+          const productoRef = doc(this.firestore, `productos/${current.productoId}`);
+          transaction.update(refs[index], removeUndefinedDeep({
+            precioVenta: precios[index], ganancia: precios[index] - Number(current.precioCompra ?? 0),
+            totalOperacion, metodoPago: input.metodoPago, fechaVenta: input.fechaVenta,
+            clienteId: input.clienteId || deleteField(),
+            clienteNombre: input.clienteNombre || deleteField(),
+            clienteTelefono: input.clienteTelefono || deleteField(),
+            clienteCi: input.clienteCi || deleteField(),
+            notas: input.notas || deleteField(), updatedAt: timestamp,
+          }));
+          transaction.update(productoRef, { precioVenta: precios[index], updatedAt: timestamp });
+        });
       if (operacionId) transaction.update(doc(this.firestore, `operacionesVenta/${operacionId}`), removeUndefinedDeep({
         total: totalOperacion, metodoPago: input.metodoPago, fechaVenta: input.fechaVenta,
-        clienteNombre: input.clienteNombre || deleteField(), clienteTelefono: input.clienteTelefono || deleteField(),
+        clienteId: input.clienteId || deleteField(),
+        clienteNombre: input.clienteNombre || deleteField(),
+        clienteTelefono: input.clienteTelefono || deleteField(),
+        clienteCi: input.clienteCi || deleteField(),
         notas: input.notas || deleteField(), updatedAt: timestamp,
       }));
     });
@@ -151,8 +163,9 @@ export class VentaService {
       const totalOperacion = precios.reduce((sum, price) => sum + price, 0);
       const timestamp = serverTimestamp();
       const common = { operacionId, cantidadDetalles:nuevos.length, totalOperacion, metodoPago:input.metodoPago,
-        fechaVenta:input.fechaVenta, clienteNombre:input.clienteNombre||deleteField(),
-        clienteTelefono:input.clienteTelefono||deleteField(), notas:input.notas||deleteField(), updatedAt:timestamp };
+        fechaVenta:input.fechaVenta, clienteId:input.clienteId||deleteField(),
+        clienteNombre:input.clienteNombre||deleteField(), clienteTelefono:input.clienteTelefono||deleteField(),
+        clienteCi:input.clienteCi||deleteField(), notas:input.notas||deleteField(), updatedAt:timestamp };
 
       for (const original of originales) {
         if (!nuevosIds.includes(original.productoId)) {
@@ -167,20 +180,24 @@ export class VentaService {
           nombreProducto:product.nombre, precioCompra:this.readPurchasePrice(product), precioVenta:precios[index],
           ganancia:precios[index]-this.readPurchasePrice(product), activo:true, schemaVersion:3 };
         if (existing?.id) transaction.update(doc(this.firestore, `ventas/${existing.id}`), ventaData);
+        if (existing?.id) transaction.update(productoRefs.get(item.producto.id!)!, { precioVenta: precios[index], updatedAt: timestamp });
         else {
           transaction.set(nuevosVentaRefs.get(item.producto.id!)!, removeUndefinedDeep({
             ...ventaData,
             loteId: product.loteId || undefined,
+            clienteId: input.clienteId || undefined,
             clienteNombre: input.clienteNombre || undefined,
             clienteTelefono: input.clienteTelefono || undefined,
+            clienteCi: input.clienteCi || undefined,
             notas: input.notas || undefined,
             createdAt: timestamp,
           }));
-          transaction.update(productoRefs.get(item.producto.id!)!, { estado:'vendido', updatedAt:timestamp });
+          transaction.update(productoRefs.get(item.producto.id!)!, { estado:'vendido', precioVenta:precios[index], updatedAt:timestamp });
         }
       });
       transaction.set(operacionRef, { total:totalOperacion, cantidadDetalles:nuevos.length, metodoPago:input.metodoPago,
-        fechaVenta:input.fechaVenta, clienteNombre:input.clienteNombre||deleteField(), clienteTelefono:input.clienteTelefono||deleteField(),
+        fechaVenta:input.fechaVenta, clienteId:input.clienteId||deleteField(), clienteNombre:input.clienteNombre||deleteField(),
+        clienteTelefono:input.clienteTelefono||deleteField(), clienteCi:input.clienteCi||deleteField(),
         notas:input.notas||deleteField(), activo:true, schemaVersion:1, updatedAt:timestamp }, { merge:true });
     });
   }

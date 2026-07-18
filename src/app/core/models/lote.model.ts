@@ -5,6 +5,7 @@ export interface Lote extends AuditableEntity {
   nombre: string;
   descripcion?: string;
   fechaCompra: FirestoreDate;
+  proveedorId?: string;
   proveedor?: string;
   lugarCompra?: string;
   costoTotal: number;
@@ -28,6 +29,7 @@ export const emptyLote: Omit<Lote, 'createdAt' | 'updatedAt'> = {
   nombre: '',
   descripcion: '',
   fechaCompra: new Date().toISOString().slice(0, 10),
+  proveedorId: '',
   proveedor: '',
   lugarCompra: '',
   costoTotal: 0,

@@ -1,0 +1,78 @@
+<h2 mat-dialog-title>{{ data ? 'Editar proveedor' : 'Registrar proveedor' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre completo</mat-label>
+        <input matInput formControlName="nombreCompleto" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Celular</mat-label>
+        <input matInput formControlName="celular" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Ubicacion o direccion</mat-label>
+        <input matInput formControlName="direccion" />
+      </mat-form-field>
+
+      <div class="full category-box">
+        <div class="category-header">
+          <h3>Categorias que vende</h3>
+          <p>Puedes agregarlas una por una.</p>
+        </div>
+        <div class="category-input">
+          <mat-form-field appearance="outline">
+            <mat-label>Nueva categoria</mat-label>
+            <input
+              matInput
+              formControlName="categoriaNueva"
+              (keydown.enter)="$event.preventDefault(); addCategoria()"
+            />
+          </mat-form-field>
+          <button mat-stroked-button type="button" (click)="addCategoria()">
+            <mat-icon>add</mat-icon>
+            Agregar
+          </button>
+        </div>
+
+        <div class="category-table">
+          @for (control of categorias.controls; track $index; let i = $index) {
+            <div class="category-row">
+              <span>{{ control.getRawValue() }}</span>
+              <button mat-icon-button type="button" color="warn" (click)="removeCategoria(i)" aria-label="Quitar categoria">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          } @empty {
+            <p class="muted">Todavia no agregaste categorias.</p>
+          }
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Instagram</mat-label>
+        <input matInput formControlName="instagram" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>TikTok</mat-label>
+        <input matInput formControlName="tiktok" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Detalles</mat-label>
+        <textarea matInput rows="3" formControlName="detalles"></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close type="button">Cancelar</button>
+  <button mat-flat-button class="primary-action" type="button" (click)="save()" [disabled]="form.invalid || saving()">
+    {{ saving() ? 'Guardando...' : data ? 'Guardar cambios' : 'Registrar proveedor' }}
+  </button>
+</mat-dialog-actions>

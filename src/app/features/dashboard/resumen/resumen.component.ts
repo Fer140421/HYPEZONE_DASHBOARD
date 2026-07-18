@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { combineLatest, map } from 'rxjs';
+import { combineLatest, map, shareReplay } from 'rxjs';
 import { precioCompraProducto, precioProducto } from '../../../core/models/producto.model';
 import { ProductoRepository } from '../../../core/repositories/producto.repository';
 import { VentaRepository } from '../../../core/repositories/venta.repository';
@@ -24,79 +24,29 @@ import { StatusChipComponent } from '../../../shared/components/status-chip/stat
     PageHeaderComponent,
     StatusChipComponent,
   ],
-  template: `
-    <app-page-header
-      title="Resumen"
-      description="Lectura rapida del inventario, ventas y margen de la tienda."
-    />
-
-    @if (vm$ | async; as vm) {
-      <section class="metric-grid">
-        @for (card of vm.cards; track card.label) {
-          <mat-card class="metric-card">
-            <mat-icon>{{ card.icon }}</mat-icon>
-            <span>{{ card.label }}</span>
-            <strong>{{ card.currency ? (card.value | currency: 'BOB' : 'symbol-narrow') : card.value }}</strong>
-          </mat-card>
-        }
-      </section>
-
-      <section class="dashboard-grid">
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Ultimas ventas</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <mat-list>
-              @for (venta of vm.ultimasVentas; track venta.id) {
-                <mat-list-item>
-                  <mat-icon matListItemIcon>receipt_long</mat-icon>
-                  <div matListItemTitle>{{ venta.nombreProducto }}</div>
-                  <div matListItemLine>
-                    {{ venta.fechaVenta | date: 'mediumDate' }} ·
-                    {{ venta.precioVenta | currency: 'BOB' : 'symbol-narrow' }}
-                  </div>
-                </mat-list-item>
-              } @empty {
-                <p class="muted padded">Aun no hay ventas registradas.</p>
-              }
-            </mat-list>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Atencion de stock</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <mat-list>
-              @for (producto of vm.alertasStock; track producto.id) {
-                <mat-list-item>
-                  <mat-icon matListItemIcon>warning</mat-icon>
-                  <div matListItemTitle>{{ producto.nombre }}</div>
-                  <div matListItemLine>
-                    {{ producto.talla }} · <app-status-chip [status]="producto.estado" />
-                  </div>
-                </mat-list-item>
-              } @empty {
-                <p class="muted padded">Sin alertas por ahora.</p>
-              }
-            </mat-list>
-          </mat-card-content>
-        </mat-card>
-      </section>
-    }
-  `,
+  templateUrl: './resumen.html',
+  styleUrl: './resumen.css',
 })
 export class ResumenComponent {
   private readonly productoRepository = inject(ProductoRepository);
   private readonly ventaRepository = inject(VentaRepository);
   private readonly loteRepository = inject(LoteRepository);
 
+  // Una fuente compartida por colección durante la vida de esta vista.
+  private readonly productosSource$ = this.productoRepository.getAll(true).pipe(
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+  private readonly ventasSource$ = this.ventaRepository.getAll().pipe(
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+  private readonly lotesSource$ = this.loteRepository.getAll().pipe(
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
   readonly vm$ = combineLatest([
-    this.productoRepository.getAll(true),
-    this.ventaRepository.getAll(),
-    this.loteRepository.getAll(),
+    this.productosSource$,
+    this.ventasSource$,
+    this.lotesSource$,
   ]).pipe(
     map(([productos, ventas, lotes]) => {
       const activos = productos.filter((p) => p.activo !== false);

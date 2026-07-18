@@ -2,30 +2,17 @@ import { Component, EventEmitter, Output, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CloudinaryService } from '../../../core/services/cloudinary.service';
+import { cloudinaryPreviewUrl } from '../../../core/utils/cloudinary-image.util';
 
 @Component({
   selector: 'app-image-uploader',
   standalone: true,
   imports: [MatButtonModule, MatIconModule],
-  template: `
-    <div class="image-uploader">
-      <label class="upload-dropzone">
-        <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" [multiple]="maxImages() > 1" (change)="onSelect($event)" />
-        <mat-icon>cloud_upload</mat-icon>
-        <span>{{ uploading() ? 'Subiendo imagenes...' : 'Subir imagenes' }}</span>
-      </label>
-
-      @if (images().length) {
-        <div class="image-grid">
-          @for (image of images(); track image) {
-            <img [src]="image" alt="Imagen del producto" />
-          }
-        </div>
-      }
-    </div>
-  `,
+  templateUrl: './image-uploader.html',
+  styleUrl: './image-uploader.css',
 })
 export class ImageUploaderComponent {
+  readonly previewImage = cloudinaryPreviewUrl;
   readonly images = input<string[]>([]);
   readonly maxImages = input(Number.MAX_SAFE_INTEGER);
   readonly uploading = signal(false);

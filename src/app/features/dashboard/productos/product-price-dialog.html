@@ -1,0 +1,17 @@
+
+    <h2 mat-dialog-title>Editar precio</h2>
+    <mat-dialog-content>
+      <form class="form-grid compact" [formGroup]="form">
+        <mat-form-field appearance="outline">
+          <mat-label>Precio de venta</mat-label>
+          <input matInput type="number" formControlName="precioVenta" />
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="cancel()">Cancelar</button>
+      <button mat-flat-button class="primary-action" type="button" [disabled]="form.invalid" (click)="save()">
+        Guardar precio
+      </button>
+    </mat-dialog-actions>
+  

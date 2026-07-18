@@ -70,6 +70,18 @@ export const routes: Routes = [
           import('./features/dashboard/ventas/ventas.component').then((m) => m.VentasComponent),
       },
       {
+        path: 'proveedores',
+        loadComponent: () =>
+          import('./features/dashboard/proveedores/proveedores.component').then(
+            (m) => m.ProveedoresComponent,
+          ),
+      },
+      {
+        path: 'clientes',
+        loadComponent: () =>
+          import('./features/dashboard/clientes/clientes.component').then((m) => m.ClientesComponent),
+      },
+      {
         path: 'ventas/nueva',
         loadComponent: () =>
           import('./features/dashboard/ventas/ventas.component').then((m) => m.VentasComponent),
@@ -90,6 +102,16 @@ export const routes: Routes = [
         path: 'catalogos',
         loadComponent: () =>
           import('./features/dashboard/catalogos/catalogos.component').then((m) => m.CatalogosComponent),
+      },
+      {
+        path: 'marcas',
+        loadComponent: () =>
+          import('./features/dashboard/marcas/marcas.component').then((m) => m.MarcasComponent),
+      },
+      {
+        path: 'tallas',
+        loadComponent: () =>
+          import('./features/dashboard/tallas/tallas.component').then((m) => m.TallasComponent),
       },
       {
         path: 'limpieza-productos',

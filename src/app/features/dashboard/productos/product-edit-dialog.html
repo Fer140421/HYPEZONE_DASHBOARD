@@ -1,0 +1,99 @@
+
+    <h2 mat-dialog-title>Editar producto</h2>
+    <mat-dialog-content>
+      <form class="form-grid dialog-form" [formGroup]="form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Marca</mat-label>
+          <mat-select formControlName="marca">
+            <mat-option value="">Sin definir</mat-option>
+            @for (marca of marcas$ | async; track marca.id) {
+              <mat-option [value]="marca.nombre">{{ marca.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Categoria</mat-label>
+          <mat-select formControlName="categoria">
+            @for (categoria of categorias$ | async; track categoria.id) {
+              <mat-option [value]="categoria.nombre">{{ categoria.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Lote</mat-label>
+          <mat-select formControlName="loteId">
+            <mat-option value="">Sin lote</mat-option>
+            @for (lote of data.lotes$ | async; track lote.id) {
+              <mat-option [value]="lote.id">{{ lote.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Talla</mat-label>
+          <mat-select formControlName="talla">
+            @for (talla of tallas$ | async; track talla.id) {
+              <mat-option [value]="talla.nombre">{{ talla.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Color</mat-label>
+          <input matInput formControlName="color" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Genero</mat-label>
+          <mat-select formControlName="genero">
+            <mat-option value="">Sin definir</mat-option>
+            @for (genero of generos; track genero) {
+              <mat-option [value]="genero">{{ genero }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            @for (estado of estados; track estado) {
+              <mat-option [value]="estado">{{ estado }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Precio compra</mat-label>
+          <input matInput type="number" formControlName="precioCompra" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Precio venta</mat-label>
+          <input matInput type="number" formControlName="precioVenta" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Precio oferta</mat-label>
+          <input matInput type="number" formControlName="precioOferta" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Codigo</mat-label>
+          <input matInput formControlName="codigo" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Descripcion</mat-label>
+          <textarea matInput rows="3" formControlName="descripcion"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Notas</mat-label>
+          <textarea matInput rows="2" formControlName="notas"></textarea>
+        </mat-form-field>
+        <div class="full">
+          <app-image-uploader [images]="imagenes()" (uploaded)="imagenes.set($event)" />
+        </div>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" mat-dialog-close>Cancelar</button>
+      <button mat-flat-button class="primary-action" type="button" [disabled]="form.invalid" (click)="save()">
+        Guardar cambios
+      </button>
+    </mat-dialog-actions>
+  

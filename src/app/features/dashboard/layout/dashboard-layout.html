@@ -1,0 +1,57 @@
+
+    <mat-sidenav-container class="shell">
+      <mat-sidenav
+        #sidenav
+        class="sidebar"
+        [mode]="(isHandset$ | async) ? 'over' : 'side'"
+        [opened]="(isHandset$ | async) === false"
+      >
+        <a class="brand" routerLink="/dashboard/resumen">
+          <span class="brand-mark">HZ</span>
+          <span>
+            <strong>Hypezone</strong>
+            <small>Streetwear admin</small>
+          </span>
+        </a>
+
+        <mat-nav-list>
+          @for (item of navItems; track item.route) {
+            <a
+              mat-list-item
+              [routerLink]="item.route"
+              routerLinkActive="active-link"
+              (click)="sidenav.mode === 'over' ? sidenav.close() : undefined"
+            >
+              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+              <span matListItemTitle>{{ item.label }}</span>
+            </a>
+          }
+        </mat-nav-list>
+      </mat-sidenav>
+
+      <mat-sidenav-content>
+        <mat-toolbar class="topbar">
+          @if (isHandset$ | async) {
+            <button mat-icon-button type="button" (click)="sidenav.toggle()" aria-label="Abrir menu">
+              <mat-icon>menu</mat-icon>
+            </button>
+          }
+          <span class="topbar-title">Panel de control</span>
+          <span class="spacer"></span>
+          <button mat-icon-button [matMenuTriggerFor]="accountMenu" aria-label="Cuenta">
+            <mat-icon>account_circle</mat-icon>
+          </button>
+          <mat-menu #accountMenu="matMenu">
+            <button mat-menu-item type="button" (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              <span>Cerrar sesion</span>
+            </button>
+          </mat-menu>
+        </mat-toolbar>
+
+        <main class="content">
+          <router-outlet />
+        </main>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  

@@ -1,0 +1,17 @@
+
+    <div class="image-uploader">
+      <label class="upload-dropzone">
+        <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" [multiple]="maxImages() > 1" (change)="onSelect($event)" />
+        <mat-icon>cloud_upload</mat-icon>
+        <span>{{ uploading() ? 'Subiendo imagenes...' : 'Subir imagenes' }}</span>
+      </label>
+
+      @if (images().length) {
+        <div class="image-grid">
+          @for (image of images(); track image) {
+            <img [src]="previewImage(image)" alt="Imagen del producto" loading="lazy" decoding="async" width="96" height="96" />
+          }
+        </div>
+      }
+    </div>
+  

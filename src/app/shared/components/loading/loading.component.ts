@@ -5,12 +5,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 'app-loading',
   standalone: true,
   imports: [MatProgressSpinnerModule],
-  template: `
-    <div class="loading-state">
-      <mat-spinner [diameter]="diameter()" />
-      <span>{{ text() }}</span>
-    </div>
-  `,
+  templateUrl: './loading.html',
+  styleUrl: './loading.css',
 })
 export class LoadingComponent {
   readonly text = input('Cargando...');

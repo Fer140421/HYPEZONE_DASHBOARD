@@ -1,0 +1,37 @@
+<h2 mat-dialog-title><mat-icon>receipt_long</mat-icon> Detalle de venta</h2>
+<mat-dialog-content>
+  <div class="sale-code">{{ operationLabel }}</div>
+  <section class="view-info">
+    <div><span>Fecha</span><strong>{{ first.fechaVenta | date: 'longDate' }}</strong></div>
+    <div><span>Metodo de pago</span><strong>{{ first.metodoPago || 'otro' }}</strong></div>
+    <div><span>Cliente</span><strong>{{ first.clienteNombre || 'No registrado' }}</strong></div>
+    <div><span>Telefono</span><strong>{{ first.clienteTelefono || 'No registrado' }}</strong></div>
+    <div><span>CI</span><strong>{{ first.clienteCi || 'No registrado' }}</strong></div>
+  </section>
+  <h3>Productos</h3>
+  <div class="view-details">
+    @for (detalle of data.detalles; track detalle.id) {
+      <article class="view-product">
+        @if (productImage(detalle); as src) {
+          <img [src]="src" [alt]="detalle.nombreProducto" loading="lazy" decoding="async" width="160" height="160" />
+        } @else {
+          <div class="view-placeholder"><mat-icon>checkroom</mat-icon></div>
+        }
+        <div class="product-data">
+          <strong>{{ detalle.nombreProducto }}</strong>
+          <small>{{ productMeta(detalle) }}</small>
+          <small>Precio de compra: {{ detalle.precioCompra | currency: 'BOB' : 'symbol-narrow' }}</small>
+          <small>Ganancia: {{ detalle.ganancia | currency: 'BOB' : 'symbol-narrow' }}</small>
+        </div>
+        <strong class="sold-price">{{ detalle.precioVenta | currency: 'BOB' : 'symbol-narrow' }}</strong>
+      </article>
+    }
+  </div>
+  <div class="view-total"><span>Total</span><strong>{{ total | currency: 'BOB' : 'symbol-narrow' }}</strong></div>
+  @if (first.notas) {
+    <div class="notes"><span>Notas</span><p>{{ first.notas }}</p></div>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-flat-button class="primary-action" mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>
