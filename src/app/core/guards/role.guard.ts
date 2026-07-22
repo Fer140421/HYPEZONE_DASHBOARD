@@ -10,10 +10,10 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const roles = route.data['roles'] as UserRole[] | undefined;
 
   return auth.sessionState$.pipe(
-    filter((state) => state.status !== 'loading'),
+    filter((state) => !['initializing', 'loading-profile'].includes(state.status)),
     take(1),
     map((state) =>
-      state.status === 'ready' && roles?.includes(auth.role()!)
+      state.status === 'authenticated' && roles?.includes(state.profile!.role)
         ? true
         : router.createUrlTree(['/auth/access'], { queryParams: { reason: 'forbidden' } }),
     ),

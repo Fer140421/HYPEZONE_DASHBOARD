@@ -41,7 +41,7 @@ export class AccessStateComponent {
     switch (this.reason()) {
       case 'missing-profile': return 'Tu cuenta no tiene un perfil administrativo configurado';
       case 'inactive': return 'Tu cuenta está desactivada';
-      case 'profile-error': return 'No pudimos verificar tu perfil administrativo. Intenta nuevamente o contacta al administrador.';
+      case 'error': return 'No pudimos verificar tu perfil administrativo. Intenta nuevamente o contacta al administrador.';
       default: return 'No tienes permisos para acceder a esta sección.';
     }
   });

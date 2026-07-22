@@ -3,11 +3,12 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, Observable, take, timeout } from 'rxjs';
 import { authGuard } from './auth.guard';
+import { publicGuard } from './public.guard';
 import { roleGuard } from './role.guard';
 import { AuthService, SessionState } from '../services/auth.service';
 
 describe('authorization guards', () => {
-  const state$ = new BehaviorSubject<SessionState>({ status: 'loading', user: null, profile: null });
+  const state$ = new BehaviorSubject<SessionState>({ status: 'initializing', user: null, profile: null });
   const router = { createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue('redirect' as never) };
   const roleSpy = jasmine.createSpy('role').and.returnValue(null);
   const auth = {
@@ -16,7 +17,7 @@ describe('authorization guards', () => {
   };
 
   beforeEach(() => {
-    state$.next({ status: 'loading', user: null, profile: null });
+    state$.next({ status: 'initializing', user: null, profile: null });
     router.createUrlTree.calls.reset();
     TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection(), { provide: AuthService, useValue: auth as unknown as AuthService }, { provide: Router, useValue: router }] });
   });
@@ -25,7 +26,8 @@ describe('authorization guards', () => {
     const result$ = TestBed.runInInjectionContext(() => authGuard({} as never, {} as never));
     const pending = firstValueFrom(asObservable(result$).pipe(take(1), timeout(50))).catch(() => 'pending');
     await expectAsync(pending).toBeResolvedTo('pending');
-    state$.next({ status: 'ready', user: {} as never, profile: activeProfile('seller') });
+    state$.next({ status: 'loading-profile', user: {} as never, profile: null });
+    state$.next({ status: 'authenticated', user: {} as never, profile: activeProfile('seller') });
     await expectAsync(firstValueFrom(asObservable(result$))).toBeResolvedTo(true);
   });
 
@@ -38,15 +40,27 @@ describe('authorization guards', () => {
     await expectAsync(firstValueFrom(asObservable(result$))).toBeResolvedTo('redirect');
   });
 
+  it('allows login after logout and redirects only an authenticated profile', async () => {
+    state$.next({ status: 'unauthenticated', user: null, profile: null });
+    let result$ = TestBed.runInInjectionContext(() => publicGuard({} as never, {} as never));
+    await expectAsync(firstValueFrom(asObservable(result$))).toBeResolvedTo(true);
+
+    state$.next({ status: 'authenticated', user: {} as never, profile: activeProfile('owner') });
+    result$ = TestBed.runInInjectionContext(() => publicGuard({} as never, {} as never));
+    await expectAsync(firstValueFrom(asObservable(result$))).toBeResolvedTo('redirect');
+  });
+
   it('allows owner but blocks admin and seller from limpieza-productos', async () => {
     const route = { data: { roles: ['owner'] } } as never;
-    state$.next({ status: 'ready', user: {} as never, profile: activeProfile('seller') });
+    state$.next({ status: 'authenticated', user: {} as never, profile: activeProfile('seller') });
     roleSpy.and.returnValue('seller');
     let result$ = TestBed.runInInjectionContext(() => roleGuard(route, {} as never));
     await expectAsync(firstValueFrom(asObservable(result$))).toBeResolvedTo('redirect');
+    state$.next({ status: 'authenticated', user: {} as never, profile: activeProfile('admin') });
     roleSpy.and.returnValue('admin');
     result$ = TestBed.runInInjectionContext(() => roleGuard(route, {} as never));
     await expectAsync(firstValueFrom(asObservable(result$))).toBeResolvedTo('redirect');
+    state$.next({ status: 'authenticated', user: {} as never, profile: activeProfile('owner') });
     roleSpy.and.returnValue('owner');
     result$ = TestBed.runInInjectionContext(() => roleGuard(route, {} as never));
     await expectAsync(firstValueFrom(asObservable(result$))).toBeResolvedTo(true);

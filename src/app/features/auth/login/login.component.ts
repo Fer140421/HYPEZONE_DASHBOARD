@@ -37,7 +37,7 @@ export class LoginComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  submit(): void {
+  async submit(): Promise<void> {
     if (this.form.invalid) {
       return;
     }
@@ -46,13 +46,22 @@ export class LoginComponent {
     this.error.set('');
 
     const { email, password } = this.form.getRawValue();
-    this.authService.login(email, password).subscribe({
-      next: () => void this.router.navigateByUrl('/dashboard'),
-      error: (error: unknown) => {
-        this.error.set(this.loginErrorMessage(error));
-        this.loading.set(false);
-      },
-    });
+    try {
+      const state = await this.authService.login(email, password);
+      if (state.status === 'authenticated') {
+        await this.router.navigateByUrl('/dashboard', { replaceUrl: true });
+        return;
+      }
+
+      await this.router.navigate(['/auth/access'], {
+        replaceUrl: true,
+        queryParams: { reason: state.status },
+      });
+    } catch (error: unknown) {
+      this.error.set(this.loginErrorMessage(error));
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   private loginErrorMessage(error: unknown): string {

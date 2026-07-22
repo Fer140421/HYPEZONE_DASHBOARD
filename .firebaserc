@@ -1,6 +1,8 @@
 {
   "projects": {
-    "dev": "HYPEZONE_DEV_PROJECT_ID",
-    "prod": "hypezone-3ed2a"
-  }
+    "prod": "hypezone-3ed2a",
+    "dev": "hypezone-dev"
+  },
+  "targets": {},
+  "etags": {}
 }

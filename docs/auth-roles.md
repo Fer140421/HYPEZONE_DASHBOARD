@@ -44,12 +44,12 @@ Los timestamps siguen el patrón del proyecto: `serverTimestamp()` al crear o ac
 
 ## Estados de sesión
 
-- `loading`: Auth o la lectura de perfil aún no resolvieron; los guards esperan, sin redirección prematura.
+- `initializing` / `loading-profile`: Auth o la lectura de perfil aún no resolvieron; los guards esperan, sin redirección prematura.
 - `unauthenticated`: se redirige a login.
 - `missing-profile`: acceso bloqueado y mensaje “Tu cuenta no tiene un perfil administrativo configurado”.
 - `inactive`: acceso bloqueado y mensaje “Tu cuenta está desactivada”.
-- `profile-error`: acceso bloqueado con mensaje de verificación fallida.
-- `ready`: perfil existente, activo y apto para guards por rol.
+- `error`: acceso bloqueado con mensaje de verificación fallida.
+- `authenticated`: perfil existente, activo y apto para guards por rol.
 
 ## Guards y Security Rules
 
