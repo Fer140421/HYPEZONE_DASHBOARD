@@ -1,10 +1,12 @@
 
     @if (mode() === 'list') {
       <app-page-header title="Productos" description="Inventario completo con filtros.">
-        <button mat-flat-button class="primary-action" routerLink="/dashboard/productos/nuevo">
-          <mat-icon>add</mat-icon>
-          Nuevo producto
-        </button>
+        @if (auth.can('manageProducts')) {
+          <button mat-flat-button class="primary-action" routerLink="/dashboard/productos/nuevo">
+            <mat-icon>add</mat-icon>
+            Nuevo producto
+          </button>
+        }
       </app-page-header>
 
       @if (listViewModel$ | async; as vm) {
@@ -83,9 +85,9 @@
             <td mat-cell *matCellDef="let producto">
               <div class="price-cell">
                 <span>{{ precio(producto) | currency: 'BOB' : 'symbol-narrow' }}</span>
-                <button mat-icon-button type="button" (click)="openPriceEdit(producto)" aria-label="Editar precio">
-                  <mat-icon>edit</mat-icon>
-                </button>
+                @if (auth.can('manageProducts')) {
+                  <button mat-icon-button type="button" (click)="openPriceEdit(producto)" aria-label="Editar precio"><mat-icon>edit</mat-icon></button>
+                }
               </div>
             </td>
           </ng-container>
@@ -101,17 +103,13 @@
               <button mat-icon-button type="button" (click)="openView(producto)" aria-label="Ver producto">
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button mat-icon-button (click)="openEdit(producto)" aria-label="Editar producto">
-                <mat-icon>edit</mat-icon>
-              </button>
-              @if (producto.activo !== false) {
-                <button mat-icon-button color="warn" (click)="softDelete(producto)" aria-label="Eliminar producto">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              } @else {
-                <button mat-icon-button color="primary" (click)="confirmRestore(producto)" aria-label="Restaurar producto">
-                  <mat-icon>restore</mat-icon>
-                </button>
+              @if (auth.can('manageProducts')) {
+                <button mat-icon-button (click)="openEdit(producto)" aria-label="Editar producto"><mat-icon>edit</mat-icon></button>
+                @if (producto.activo !== false) {
+                  <button mat-icon-button color="warn" (click)="softDelete(producto)" aria-label="Eliminar producto"><mat-icon>delete</mat-icon></button>
+                } @else {
+                  <button mat-icon-button color="primary" (click)="confirmRestore(producto)" aria-label="Restaurar producto"><mat-icon>restore</mat-icon></button>
+                }
               }
             </td>
           </ng-container>

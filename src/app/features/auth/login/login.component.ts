@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { FirebaseError } from 'firebase/app';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -47,10 +48,17 @@ export class LoginComponent {
     const { email, password } = this.form.getRawValue();
     this.authService.login(email, password).subscribe({
       next: () => void this.router.navigateByUrl('/dashboard'),
-      error: () => {
-        this.error.set('No pudimos iniciar sesion. Revisa tu email y contrasena.');
+      error: (error: unknown) => {
+        this.error.set(this.loginErrorMessage(error));
         this.loading.set(false);
       },
     });
+  }
+
+  private loginErrorMessage(error: unknown): string {
+    if (error instanceof FirebaseError && error.code === 'auth/user-disabled') {
+      return 'Esta cuenta de Firebase Authentication está deshabilitada.';
+    }
+    return 'No pudimos iniciar sesión. Revisa tu email y contraseña.';
   }
 }

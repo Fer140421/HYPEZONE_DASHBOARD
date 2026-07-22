@@ -15,7 +15,7 @@
         </a>
 
         <mat-nav-list>
-          @for (item of navItems; track item.route) {
+          @for (item of visibleNavItems(); track item.route) {
             <a
               mat-list-item
               [routerLink]="item.route"
@@ -45,6 +45,11 @@
             <mat-icon>account_circle</mat-icon>
           </button>
           <mat-menu #accountMenu="matMenu">
+            <div class="account-summary">
+              <strong>{{ auth.profile()?.displayName }}</strong>
+              <small>{{ auth.profile()?.email }}</small>
+              <small>{{ auth.role() }}</small>
+            </div>
             <button mat-menu-item type="button" (click)="logout()">
               <mat-icon>logout</mat-icon>
               <span>Cerrar sesion</span>

@@ -32,6 +32,7 @@ import { CategoriaRepository } from '../../../core/repositories/categoria.reposi
 import { MarcaRepository } from '../../../core/repositories/marca.repository';
 import { TallaRepository } from '../../../core/repositories/talla.repository';
 import { VentaService } from '../../../core/services/venta.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { cloudinaryDetailUrl, cloudinaryThumbnailUrl } from '../../../core/utils/cloudinary-image.util';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ImageUploaderComponent } from '../../../shared/components/image-uploader/image-uploader.component';
@@ -83,6 +84,7 @@ export class ProductosComponent implements OnInit {
   private readonly marcaRepository = inject(MarcaRepository);
   private readonly tallaRepository = inject(TallaRepository);
   private readonly destroyRef = inject(DestroyRef);
+  readonly auth = inject(AuthService);
   private readonly pagination$ = new BehaviorSubject<PaginationState>({
     pageIndex: 0,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -277,6 +279,7 @@ export class ProductosComponent implements OnInit {
   }
 
   openEdit(producto: Producto): void {
+    if (!this.auth.can('manageProducts')) return;
     if (!producto.id) {
       return;
     }
@@ -300,6 +303,7 @@ export class ProductosComponent implements OnInit {
   }
 
   async save(): Promise<void> {
+    if (!this.auth.can('manageProducts')) return;
     const raw = this.form.getRawValue();
     const { precioOferta, ...productValues } = raw;
     const payload: Partial<Producto> = {
@@ -324,6 +328,7 @@ export class ProductosComponent implements OnInit {
   }
 
   openPriceEdit(producto: Producto): void {
+    if (!this.auth.can('manageProducts')) return;
     if (!producto.id) {
       return;
     }
@@ -345,6 +350,7 @@ export class ProductosComponent implements OnInit {
   }
 
   softDelete(producto: Producto): void {
+    if (!this.auth.can('manageProducts')) return;
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Eliminar producto',
@@ -362,6 +368,7 @@ export class ProductosComponent implements OnInit {
   }
 
   async restore(producto: Producto): Promise<void> {
+    if (!this.auth.can('manageProducts')) return;
     if (!producto.id) {
       return;
     }

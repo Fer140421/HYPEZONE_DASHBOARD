@@ -1,10 +1,47 @@
+// PROVISIONAL PARA DEV. No desplegar sin revisión específica del entorno destino.
+// El rol se lee de users/{uid}; en la siguiente fase se duplicará en custom claims.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TEMPORAL: no desplegar este archivo sin antes copiar y revisar las reglas
-    // actualmente publicadas en Firebase para el proyecto de produccion.
-    match /{document=**} {
-      allow read, write: if false;
+    function signedIn() { return request.auth != null; }
+    function profile() { return get(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    function hasRole(role) { return signedIn() && profile().data.role == role && profile().data.active == true; }
+    function owner() { return hasRole('owner'); }
+    function operator() { return hasRole('owner') || hasRole('admin'); }
+    function seller() { return hasRole('seller'); }
+
+    // Each authenticated user can read their profile. Only an owner manages user profiles.
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || owner());
+      allow create, update, delete: if owner();
     }
+
+    // Seller product access is temporary and document-wide. Field-level views come next phase.
+    match /productos/{id} {
+      allow read: if operator() || seller();
+      allow create, update, delete: if operator();
+    }
+    match /clientes/{id} {
+      allow read, create, update: if operator() || seller();
+      allow delete: if operator();
+    }
+    match /ventas/{id} {
+      allow read, create: if operator() || seller();
+      allow update: if operator();
+      allow delete: if false;
+    }
+    match /operacionesVenta/{id} {
+      allow read, create: if operator() || seller();
+      allow update: if operator();
+      allow delete: if false;
+    }
+    match /lotes/{id} { allow read, write: if operator(); }
+    match /proveedores/{id} { allow read, write: if operator(); }
+    match /{collection}/{id} {
+      allow read, write: if operator() && collection in ['categorias', 'marcas', 'tallas'];
+    }
+
+    // Final default: all unlisted collections and anonymous requests are denied.
+    match /{document=**} { allow read, write: if false; }
   }
 }

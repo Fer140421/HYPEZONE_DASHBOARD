@@ -10,6 +10,7 @@ import {
   ProductoCleanupResult,
   ProductoCleanupService,
 } from '../../../core/services/producto-cleanup.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 
@@ -31,6 +32,7 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 export class LimpiezaProductosComponent {
   private readonly cleanupService = inject(ProductoCleanupService);
   private readonly dialog = inject(MatDialog);
+  private readonly auth = inject(AuthService);
 
   readonly audit = signal<ProductoCleanupAudit | null>(null);
   readonly result = signal<ProductoCleanupResult | null>(null);
@@ -43,6 +45,7 @@ export class LimpiezaProductosComponent {
   }
 
   async runAudit(): Promise<void> {
+    if (!this.auth.can('cleanupProducts')) return;
     this.working.set(true);
     this.error.set('');
     try {
@@ -55,6 +58,7 @@ export class LimpiezaProductosComponent {
   }
 
   confirmCleanup(): void {
+    if (!this.auth.can('cleanupProducts')) return;
     const current = this.audit();
     if (!current || !this.cleanupService.canCleanup(current) || !current.listosParaLimpieza) return;
 
