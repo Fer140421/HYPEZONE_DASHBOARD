@@ -9,6 +9,9 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
+import { validateEnvironment } from './core/config/environment-validator';
+
+validateEnvironment(environment);
 
 export const appConfig: ApplicationConfig = {
   providers: [

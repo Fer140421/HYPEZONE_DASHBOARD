@@ -10,6 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { map, shareReplay } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { environment } from '../../../../environments/environment';
 
 interface NavItem {
   label: string;
@@ -38,6 +39,8 @@ interface NavItem {
 export class DashboardLayoutComponent {
   private readonly breakpointObserver = inject(BreakpointObserver);
   private readonly authService = inject(AuthService);
+  readonly showEnvironmentBanner = environment.showEnvironmentBanner;
+  readonly environmentName = environment.environmentName;
 
   readonly isHandset$ = this.breakpointObserver.observe('(max-width: 900px)').pipe(
     map((result) => result.matches),

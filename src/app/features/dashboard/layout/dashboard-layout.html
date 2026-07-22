@@ -37,6 +37,9 @@
             </button>
           }
           <span class="topbar-title">Panel de control</span>
+          @if (showEnvironmentBanner) {
+            <span class="environment-badge">ENTORNO DE {{ environmentName }}</span>
+          }
           <span class="spacer"></span>
           <button mat-icon-button [matMenuTriggerFor]="accountMenu" aria-label="Cuenta">
             <mat-icon>account_circle</mat-icon>
